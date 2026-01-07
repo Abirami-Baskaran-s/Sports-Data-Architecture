@@ -1,0 +1,171 @@
+CREATE DATABASE sports_league;
+USE sports_league;
+
+DROP TABLE IF EXISTS Sponsors;
+DROP TABLE IF EXISTS MedicalStaff;
+DROP TABLE IF EXISTS Matches;
+DROP TABLE IF EXISTS Players;
+DROP TABLE IF EXISTS Referees;
+DROP TABLE IF EXISTS Teams;
+
+
+CREATE TABLE Teams (
+    TeamID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    City VARCHAR(100) NOT NULL,
+    CoachName VARCHAR(100),
+    UNIQUE KEY (Name)
+);
+
+CREATE TABLE Referees (
+    RefereeID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    PhoneNumber VARCHAR(20),
+    UNIQUE KEY (PhoneNumber)
+);
+
+CREATE TABLE Players (
+    PlayerID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    MiddleName VARCHAR(50),
+    LastName VARCHAR(50) NOT NULL,
+    PhoneNumber VARCHAR(20),
+    DOB DATE,
+    Address TEXT,
+    Position VARCHAR(50),
+    TeamID INT NOT NULL,
+    ContractStart DATE,
+    ContractEnd DATE,
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
+);
+
+CREATE TABLE Matches (
+    MatchID INT PRIMARY KEY AUTO_INCREMENT,
+    MatchDate DATETIME NOT NULL,
+    Location VARCHAR(255),
+    HomeTeamID INT NOT NULL,
+    AwayTeamID INT NOT NULL,
+    RefereeID INT,
+    FOREIGN KEY (HomeTeamID) REFERENCES Teams(TeamID) ON DELETE RESTRICT,
+    FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID) ON DELETE RESTRICT,
+    FOREIGN KEY (RefereeID) REFERENCES Referees(RefereeID) ON DELETE SET NULL
+);
+
+CREATE TABLE MedicalStaff (
+    MedicalStaffID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Role VARCHAR(100),
+    TeamID INT NOT NULL,
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
+);
+
+CREATE TABLE Sponsors (
+    SponsorID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Type VARCHAR(50),
+    ContactDetails TEXT,
+    TeamID INT NOT NULL,
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
+);
+
+
+INSERT INTO Teams (Name, City, CoachName) VALUES
+('Thunder United', 'New York', 'John Smith'),
+('Blue Warriors', 'Los Angeles', 'Maria Garcia'),
+('Green Strikers', 'Chicago', 'David Johnson'),
+('Red Eagles', 'Houston', 'Sarah Williams'),
+('Golden Falcons', 'Phoenix', 'Michael Brown');
+
+INSERT INTO Referees (Name, PhoneNumber) VALUES
+('Robert Lee', '555-0101'),
+('Jennifer White', '555-0102'),
+('James Davis', '555-0103'),
+('Patricia Martinez', '555-0104');
+
+INSERT INTO Players (FirstName, MiddleName, LastName, PhoneNumber, DOB, Address, Position, TeamID, ContractStart, ContractEnd) VALUES
+('Alex', 'James', 'Thompson', '555-1001', '1995-03-15', '123 Main St, NY', 'Forward', 1, '2023-01-01', '2026-12-31'),
+('Lucas', 'Michael', 'Rodriguez', '555-1002', '1998-07-22', '456 Oak Ave, NY', 'Midfielder', 1, '2023-06-01', '2027-05-31'),
+('Emma', 'Rose', 'Anderson', '555-1003', '1996-11-08', '789 Pine Rd, LA', 'Defender', 2, '2023-02-15', '2026-02-14'),
+('Oliver', 'Henry', 'Taylor', '555-1004', '1999-05-30', '321 Elm St, LA', 'Goalkeeper', 2, '2023-03-01', '2027-02-28'),
+('Sophia', 'Grace', 'Clark', '555-1005', '1997-09-12', '654 Maple Dr, Chicago', 'Forward', 3, '2023-04-01', '2026-03-31'),
+('Ethan', 'Christopher', 'Martin', '555-1006', '1994-02-18', '987 Cedar Ln, Houston', 'Midfielder', 4, '2023-05-01', '2026-04-30'),
+('Isabella', 'Louise', 'Lewis', '555-1007', '2000-01-25', '147 Birch Way, Phoenix', 'Defender', 5, '2023-07-01', '2027-06-30');
+
+INSERT INTO Matches (MatchDate, Location, HomeTeamID, AwayTeamID, RefereeID) VALUES
+('2024-01-15 19:00:00', 'Thunder Stadium, NY', 1, 2, 1),
+('2024-01-20 20:00:00', 'Warriors Arena, LA', 2, 3, 2),
+('2024-01-25 18:30:00', 'Green Field, Chicago', 3, 4, 3),
+('2024-02-01 19:30:00', 'Red Dome, Houston', 4, 5, 4),
+('2024-02-10 20:00:00', 'Golden Court, Phoenix', 5, 1, 1);
+
+INSERT INTO MedicalStaff (Name, Role, TeamID) VALUES
+('Dr. Steven Hall', 'Team Physician', 1),
+('Dr. Emily Wood', 'Physiotherapist', 1),
+('Dr. Christopher Brown', 'Team Physician', 2),
+('Janet Miller', 'Athletic Trainer', 2),
+('Dr. Paul Young', 'Team Physician', 3),
+('Karen Thomas', 'Nutritionist', 4),
+('Dr. George Harris', 'Team Physician', 5);
+
+INSERT INTO Sponsors (Name, Type, ContactDetails, TeamID) VALUES
+('Nike Corp', 'Equipment', 'contact@nike.com', 1),
+('Coca Cola', 'Beverage', 'sponsor@cocacola.com', 1),
+('Adidas Sports', 'Equipment', 'partnerships@adidas.com', 2),
+('Samsung Electronics', 'Technology', 'sports@samsung.com', 2),
+('Puma Athletic', 'Equipment', 'info@puma.com', 3),
+('Red Bull Energy', 'Beverage', 'sports@redbull.com', 4),
+('Apple Inc', 'Technology', 'partnerships@apple.com', 5);
+
+
+SELECT '=== TEAMS ===' as Info;
+SELECT * FROM Teams;
+
+SELECT '=== REFEREES ===' as Info;
+SELECT * FROM Referees;
+
+SELECT '=== PLAYERS ===' as Info;
+SELECT * FROM Players;
+
+SELECT '=== MATCHES ===' as Info;
+SELECT * FROM Matches;
+
+SELECT '=== MEDICAL STAFF ===' as Info;
+SELECT * FROM MedicalStaff;
+
+SELECT '=== SPONSORS ===' as Info;
+SELECT * FROM Sponsors;
+
+SELECT '=== SAMPLE QUERIES ===' as Info;
+
+SELECT '--- Players in Thunder United ---' as Query;
+SELECT CONCAT(p.FirstName, ' ', p.LastName) as PlayerName, p.Position, t.Name as Team
+FROM Players p
+JOIN Teams t ON p.TeamID = t.TeamID
+WHERE t.Name = 'Thunder United';
+
+SELECT '--- Upcoming Matches ---' as Query;
+SELECT m.MatchID, m.MatchDate, ht.Name as HomeTeam, at.Name as AwayTeam, m.Location, r.Name as Referee
+FROM Matches m
+JOIN Teams ht ON m.HomeTeamID = ht.TeamID
+JOIN Teams at ON m.AwayTeamID = at.TeamID
+LEFT JOIN Referees r ON m.RefereeID = r.RefereeID;
+
+SELECT '--- Player Count per Team ---' as Query;
+SELECT t.Name as Team, COUNT(p.PlayerID) as PlayerCount
+FROM Teams t
+LEFT JOIN Players p ON t.TeamID = p.TeamID
+GROUP BY t.TeamID, t.Name
+ORDER BY PlayerCount DESC;
+
+SELECT '--- Medical Staff per Team ---' as Query;
+SELECT t.Name as Team, GROUP_CONCAT(ms.Name SEPARATOR ', ') as MedicalStaff, GROUP_CONCAT(ms.Role SEPARATOR ', ') as Roles
+FROM Teams t
+LEFT JOIN MedicalStaff ms ON t.TeamID = ms.TeamID
+GROUP BY t.TeamID, t.Name;
+
+SELECT '--- Sponsors per Team ---' as Query;
+SELECT t.Name as Team, GROUP_CONCAT(s.Name SEPARATOR ', ') as Sponsors, COUNT(s.SponsorID) as SponsorCount
+FROM Teams t
+LEFT JOIN Sponsors s ON t.TeamID = s.TeamID
+GROUP BY t.TeamID, t.Name
+ORDER BY SponsorCount DESC;
