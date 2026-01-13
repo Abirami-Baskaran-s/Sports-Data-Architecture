@@ -1,0 +1,50 @@
+SQL Implementation Description
+
+This SQL script establishes the structural foundation of the AthletaBase system. It is designed as a relational schema where data is distributed across specialized tables to ensure modularity and high performance.
+
+The script follows a logical execution order:
+
+    Cleanup: It safely drops existing tables to allow for clean re-runs.
+
+    Architecture: It builds the core tables (Teams, Players, Referees).
+
+    Connectivity: It establishes the links for operational tables (Matches, MedicalStaff, Sponsors) using relational keys.
+
+    Data Seeding: It populates the system with realistic data to test constraints and query performance.
+
+🔍 Technical Explanation of the Code
+
+To explain your work to a recruiter or in a presentation, focus on these four implementation pillars:
+1. The "Dual-Reference" Match Logic
+
+In your Matches table, you implemented a complex relationship where a single table references the Teams table twice.
+
+    Logic: One foreign key for HomeTeamID and another for AwayTeamID.
+
+    Constraint: You used ON DELETE RESTRICT, which means a team cannot be deleted from the system if they have a match scheduled. This protects the integrity of the league schedule.
+
+2. Automated Data Integrity
+
+You used several SQL constraints to act as "automated gatekeepers":
+
+    PRIMARY KEY & AUTO_INCREMENT: Ensures every player and match has a unique, non-repeating identity.
+
+    UNIQUE KEY: Applied to Referees(PhoneNumber) and Teams(Name). This prevents the system from accidentally creating duplicate teams or referees.
+
+    NOT NULL: Ensures that essential data (like a Match Date or Team Name) can never be left blank.
+
+3. Cascading Relationship Management
+
+In the MedicalStaff, Players, and Sponsors tables, you used ON DELETE CASCADE.
+
+    The "Why": These entities are "dependents" of a team. If a team is removed from the league, it makes no sense to keep their specific sponsors or doctors in the database. This keeps the database clean and optimized automatically.
+
+4. Relational Data Retrieval (The Queries)
+
+The final part of your script demonstrates how to turn raw data into "League Intelligence":
+
+    Multi-Table Joins: You combined the Players and Teams tables to create a roster view.
+
+    Aggregate Reporting: You used COUNT() and GROUP BY to instantly calculate how many players are on each team, showing you can handle high-level data analysis.
+
+    Formatting: You used CONCAT and GROUP_CONCAT to turn technical table data into readable reports for league managers
